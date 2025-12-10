@@ -43,13 +43,13 @@
             // 
             GitHubLbl.BackColor = System.Drawing.Color.Transparent;
             GitHubLbl.Cursor = System.Windows.Forms.Cursors.Hand;
-            GitHubLbl.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point);
+            GitHubLbl.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Underline);
             GitHubLbl.ForeColor = System.Drawing.Color.DodgerBlue;
             GitHubLbl.Location = new System.Drawing.Point(103, 69);
             GitHubLbl.Name = "GitHubLbl";
             GitHubLbl.Size = new System.Drawing.Size(255, 30);
             GitHubLbl.TabIndex = 18;
-            GitHubLbl.Text = "www.github.com/ItsBranK/LibraryLoader";
+            GitHubLbl.Text = "www.github.com/ItsBrank/LibraryLoader";
             GitHubLbl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             GitHubLbl.Click += GitHubLbl_Click;
             // 
@@ -57,7 +57,7 @@
             // 
             IconsLbl.BackColor = System.Drawing.Color.Transparent;
             IconsLbl.Cursor = System.Windows.Forms.Cursors.Hand;
-            IconsLbl.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point);
+            IconsLbl.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Underline);
             IconsLbl.ForeColor = System.Drawing.Color.DodgerBlue;
             IconsLbl.Location = new System.Drawing.Point(103, 99);
             IconsLbl.Name = "IconsLbl";
@@ -70,7 +70,7 @@
             // ArchetypeTitle
             // 
             ArchetypeTitle.BackColor = System.Drawing.Color.Transparent;
-            ArchetypeTitle.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            ArchetypeTitle.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold);
             ArchetypeTitle.Location = new System.Drawing.Point(12, 9);
             ArchetypeTitle.Name = "ArchetypeTitle";
             ArchetypeTitle.Size = new System.Drawing.Size(85, 30);
@@ -81,7 +81,7 @@
             // VersionLbl
             // 
             VersionLbl.BackColor = System.Drawing.Color.Transparent;
-            VersionLbl.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            VersionLbl.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             VersionLbl.Location = new System.Drawing.Point(103, 39);
             VersionLbl.Name = "VersionLbl";
             VersionLbl.Size = new System.Drawing.Size(255, 30);
@@ -92,7 +92,7 @@
             // VersionTitle
             // 
             VersionTitle.BackColor = System.Drawing.Color.Transparent;
-            VersionTitle.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            VersionTitle.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold);
             VersionTitle.Location = new System.Drawing.Point(12, 39);
             VersionTitle.Name = "VersionTitle";
             VersionTitle.Size = new System.Drawing.Size(85, 30);
@@ -103,7 +103,7 @@
             // ArchetypeLbl
             // 
             ArchetypeLbl.BackColor = System.Drawing.Color.Transparent;
-            ArchetypeLbl.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            ArchetypeLbl.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             ArchetypeLbl.Location = new System.Drawing.Point(103, 9);
             ArchetypeLbl.Name = "ArchetypeLbl";
             ArchetypeLbl.Size = new System.Drawing.Size(255, 30);
@@ -114,7 +114,7 @@
             // IconsTitle
             // 
             IconsTitle.BackColor = System.Drawing.Color.Transparent;
-            IconsTitle.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            IconsTitle.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold);
             IconsTitle.Location = new System.Drawing.Point(12, 99);
             IconsTitle.Name = "IconsTitle";
             IconsTitle.Size = new System.Drawing.Size(85, 30);
@@ -125,7 +125,7 @@
             // GitHubTitle
             // 
             GitHubTitle.BackColor = System.Drawing.Color.Transparent;
-            GitHubTitle.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            GitHubTitle.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold);
             GitHubTitle.Location = new System.Drawing.Point(12, 69);
             GitHubTitle.Name = "GitHubTitle";
             GitHubTitle.Size = new System.Drawing.Size(85, 30);
@@ -153,7 +153,7 @@
             MinimizeBox = false;
             Name = "AboutFrm";
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            Text = "ItsBranK's Library Loader - About";
+            Text = "ItsBrank's Library Loader - About";
             Load += AboutFrm_Load;
             ResumeLayout(false);
         }

@@ -251,7 +251,7 @@
             MaximizeBox = false;
             Name = "MainFrm";
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            Text = "ItsBranK's Library Loader";
+            Text = "ItsBrank's Library Loader";
             Load += MainFrm_Load;
             ProcessGroupBx.ResumeLayout(false);
             ProcessGroupBx.PerformLayout();

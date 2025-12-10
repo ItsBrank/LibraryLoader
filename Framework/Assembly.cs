@@ -4,8 +4,8 @@ namespace LibraryLoader.Framework
 {
     public static class Assembly
     {
-        private static readonly bool m_x64Bit = true;
-        private static readonly string m_title = "ItsBranK's Library Loader";
+        private static readonly bool m_x64Bit = false;
+        private static readonly string m_title = "ItsBrank's Library Loader";
         private static readonly string m_version = "1.3";
 
         public static bool Is64Bit() { return m_x64Bit; }
