@@ -76,7 +76,7 @@ namespace LibraryLoader
         {
             if (e.KeyCode == Keys.Enter)
             {
-                Process? foundProcess = FProcess.GetProcess((Int32)PIDBx.Value);
+                Process? foundProcess = FProcess.GetProcess(PIDBx.Value);
 
                 if (foundProcess != null)
                 {

@@ -282,7 +282,5 @@
         private System.Windows.Forms.Timer ProcessTmr;
         private System.Windows.Forms.MenuStrip MenuStrp;
         private System.Windows.Forms.ToolStripMenuItem AboutMenuItem;
-        private System.Windows.Forms.PictureBox FileImg;
-        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }

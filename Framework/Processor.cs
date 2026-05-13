@@ -45,6 +45,11 @@ namespace LibraryLoader.Framework
             return returnList;
         }
 
+        public static Process? GetProcess(decimal pid)
+        {
+            return GetProcess((Int32)pid);
+        }
+
         public static Process? GetProcess(Int32 pid)
         {
             Process[] processList = Process.GetProcesses();

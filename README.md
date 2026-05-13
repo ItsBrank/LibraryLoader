@@ -1,7 +1,7 @@
-# ItsBrank's Library Loader v1.4
-### .NET 9.0 Windows
+# ItsBrank's Library Loader v1.5
+### .NET 10.0 Windows
 
-A simple and easy to use DLL injector that uses LoadLibraryA, written in C#.
+A simple and easy to use DLL injector that uses LoadLibraryW, written in C#.
 
 # Features
 

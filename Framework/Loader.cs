@@ -10,6 +10,23 @@ using System.IO;
 
 namespace LibraryLoader.Framework
 {
+    public enum InjectionResults : byte
+    {
+        None,
+        UnhandledException,
+        LibraryNotFound,
+        ProcessNotFound,
+        AlreadyInjected,
+        HandleNotFound,
+        KernelNotFound,
+        LoadLibraryNotFound,
+        AllocateFail,
+        WriteFail,
+        ThreadFail,
+        Success
+    }
+
+    [Flags]
     public enum ProcessFlags : UInt32
     {
         All = 0x001F0FFF,
@@ -27,19 +44,7 @@ namespace LibraryLoader.Framework
         Synchronize = 0x00100000
     }
 
-    public enum ThreadFlags : UInt32
-    {
-        TERMINATE = 0x0001,
-        SUSPEND_RESUME = 0x0002,
-        GET_CONTEXT = 0x0008,
-        SET_CONTEXT = 0x0010,
-        SET_INFORMATION = 0x0020,
-        QUERY_INFORMATION = 0x0040,
-        SET_THREAD_TOKEN = 0x0080,
-        IMPERSONATE = 0x0100,
-        DIRECT_IMPERSONATION = 0x0200
-    }
-
+    [Flags]
     public enum AllocationType : UInt32
     {
         Commit = 0x1000,
@@ -53,6 +58,7 @@ namespace LibraryLoader.Framework
         LargePages = 0x20000000
     }
 
+    [Flags]
     public enum MemoryProtection : UInt32
     {
         Execute = 0x10,
@@ -68,43 +74,27 @@ namespace LibraryLoader.Framework
         WriteCombineModifierflag = 0x400
     }
 
-    public enum InjectionResults : byte
-    {
-        None,
-        LibraryNotFound,
-        ProcessNotFound,
-        AlreadyInjected,
-        HandleNotFound,
-        KernalNotFound,
-        AllocateFail,
-        WriteFail,
-        ThreadFail,
-        Exception,
-        Success
-    }
-
     public static class FLoader
     {
         private static List<IntPtr> m_handleCache = new List<IntPtr>(); // Handle cache for processes we've already loaded into.
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        static extern int WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] buffer, UInt32 size, Int32 lpNumberOfBytesWritten);
+        static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] buffer, UInt32 nSize, out IntPtr lpNumberOfBytesWritten);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         static extern IntPtr GetProcAddress(IntPtr hModule, string lpProcName);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        static extern IntPtr CreateRemoteThread(IntPtr hProcess, IntPtr lpThreadAttribute, IntPtr dwStackSize, IntPtr lpStartAddress,
-        IntPtr lpParameter, uint dwCreationFlags, IntPtr lpThreadId);
+        static extern IntPtr CreateRemoteThread(IntPtr hProcess, IntPtr lpThreadAttribute, UInt32 dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter, UInt32 dwCreationFlags, IntPtr lpThreadId);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, IntPtr dwSize, UInt32 flAllocationType, UInt32 flProtect);
+        static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, IntPtr dwSize, AllocationType flAllocationType, MemoryProtection flProtect);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         static extern IntPtr GetModuleHandle(string lpModuleName);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        static extern IntPtr OpenProcess(UInt32 dwDesiredAccess, Int32 bInheritHandle, UInt32 dwProcessId);
+        static extern IntPtr OpenProcess(ProcessFlags dwDesiredAccess, bool bInheritHandle, UInt32 dwProcessId);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         static extern Int32 CloseHandle(IntPtr hObject);
@@ -178,61 +168,77 @@ namespace LibraryLoader.Framework
 
         private static InjectionResults LoadLibraryInternal(Process process, string libraryFile)
         {
-            if (!File.Exists(libraryFile))
-            {
-                return InjectionResults.LibraryNotFound;
-            }
+            IntPtr processHandle = IntPtr.Zero;
+            IntPtr threadHandle = IntPtr.Zero;
 
             try
             {
-                IntPtr processHandle = OpenProcess(Convert.ToUInt32(ProcessFlags.All), 1, Convert.ToUInt32(process.Id));
+                if (!File.Exists(libraryFile))
+                {
+                    return InjectionResults.LibraryNotFound;
+                }
+
+                processHandle = OpenProcess((ProcessFlags.CreateThread | ProcessFlags.QueryInformation | ProcessFlags.VirtualMemoryOperation | ProcessFlags.VirtualMemoryWrite | ProcessFlags.VirtualMemoryRead), false, (UInt32)process.Id);
 
                 if (processHandle == IntPtr.Zero)
                 {
                     return InjectionResults.HandleNotFound;
                 }
 
-                IntPtr loadLibraryAddress = GetProcAddress(GetModuleHandle("kernel32.dll"), "LoadLibraryA");
+                IntPtr kernel32Handle = GetModuleHandle("kernel32.dll");
+
+                if (kernel32Handle == IntPtr.Zero)
+                {
+                    return InjectionResults.KernelNotFound;
+                }
+
+                IntPtr loadLibraryAddress = GetProcAddress(kernel32Handle, "LoadLibraryW");
 
                 if (loadLibraryAddress == IntPtr.Zero)
                 {
-                    CloseHandle(processHandle);
-                    return InjectionResults.KernalNotFound;
+                    return InjectionResults.LoadLibraryNotFound;
                 }
 
-                IntPtr allocatedAddress = VirtualAllocEx(processHandle, IntPtr.Zero, new IntPtr(libraryFile.Length), (Convert.ToUInt32(AllocationType.Commit) | Convert.ToUInt32(AllocationType.Reserve)), Convert.ToUInt32(MemoryProtection.ExecuteReadWrite));
+                byte[] libraryBytes = Encoding.Unicode.GetBytes(libraryFile + '\0');
+                IntPtr allocateBuffer = VirtualAllocEx(processHandle, IntPtr.Zero, new IntPtr(libraryBytes.Length), (AllocationType.Commit | AllocationType.Reserve), MemoryProtection.ReadWrite);
 
-                if (allocatedAddress == IntPtr.Zero)
+                if (allocateBuffer == IntPtr.Zero)
                 {
-                    CloseHandle(processHandle);
                     return InjectionResults.AllocateFail;
                 }
 
-                byte[] bytes = Encoding.ASCII.GetBytes(libraryFile);
-                int bWroteMemory = WriteProcessMemory(processHandle, allocatedAddress, bytes, Convert.ToUInt32(bytes.Length), 0);
+                IntPtr bytesWritten = 0;
+                bool writeSuccess = WriteProcessMemory(processHandle, allocateBuffer, libraryBytes, (UInt32)libraryBytes.Length, out bytesWritten);
 
-                if (bWroteMemory == 0)
+                if (!writeSuccess || (bytesWritten.ToInt64() != libraryBytes.Length))
                 {
-                    CloseHandle(processHandle);
                     return InjectionResults.WriteFail;
                 }
 
-                IntPtr threadHandle = CreateRemoteThread(processHandle, IntPtr.Zero, IntPtr.Zero, loadLibraryAddress, allocatedAddress, 0, IntPtr.Zero);
+                threadHandle = CreateRemoteThread(processHandle, IntPtr.Zero, 0, loadLibraryAddress, allocateBuffer, 0, IntPtr.Zero);
 
                 if (threadHandle == IntPtr.Zero)
                 {
-                    CloseHandle(processHandle);
                     return InjectionResults.ThreadFail;
                 }
-
-                CloseHandle(threadHandle);
-                CloseHandle(processHandle);
 
                 return InjectionResults.Success;
             }
             catch
             {
-                return InjectionResults.Exception;
+                return InjectionResults.UnhandledException;
+            }
+            finally
+            {
+                if (threadHandle != IntPtr.Zero)
+                {
+                    CloseHandle(threadHandle);
+                }
+
+                if (processHandle != IntPtr.Zero)
+                {
+                    CloseHandle(processHandle);
+                }
             }
         }
     }
